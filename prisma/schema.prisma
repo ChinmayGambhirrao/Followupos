@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // REMOVE the url line - it's no longer needed here
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String?
+  password  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  
+  interactions Interaction[]
+}
+
+model Interaction {
+  id        String   @id @default(cuid())
+  title     String   // "Software Engineer Interview"
+  company   String?
+  type      String   // "INTERVIEW", "PROPOSAL", "EMAIL", "CALL"
+  date      DateTime @default(now())
+  notes     String?
+  
+  // Follow-up fields
+  followUpDate DateTime?  // When to follow up
+  status       String     @default("PENDING") // PENDING, SENT, RESPONDED, REJECTED, ACCEPTED
+  
+  // Relationships
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
